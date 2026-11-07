@@ -1,8 +1,8 @@
-// PDF-Tsopy Service Worker v1.2
+// PDF-Tsopy Service Worker v1.3
 // Offline support & caching strategy
 
-const CACHE_NAME = 'pdf-tsopy-v1.2';
-const STATIC_CACHE = 'pdf-tsopy-static-v1.2';
+const CACHE_NAME = 'pdf-tsopy-v1.3';
+const STATIC_CACHE = 'pdf-tsopy-static-v1.3';
 
 // Αρχεία που αποθηκεύονται για offline χρήση
 const STATIC_FILES = [
@@ -11,17 +11,18 @@ const STATIC_FILES = [
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  // PDF.js από CDN — αποθηκεύεται κι αυτό
+  // PDF.js & pdf-lib από CDN
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.9/pdf-lib.min.js'
 ];
 
 // ─── Install ───────────────────────────────────────────────────────────────
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing PDF-Tsopy v1.2...');
+  console.log('[SW] Installing PDF-Tsopy v1.3...');
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
-      // Αποθηκεύουμε τα τοπικά αρχεία — αγνοούμε αποτυχίες CDN
+      // Αποθηκεύουμε τα τοπικά αρχεία
       return cache.addAll(['./', './index.html', './manifest.json'])
         .then(() => {
           console.log('[SW] Core files cached.');
@@ -33,7 +34,7 @@ self.addEventListener('install', (event) => {
 
 // ─── Activate ──────────────────────────────────────────────────────────────
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating PDF-Tsopy...');
+  console.log('[SW] Activating PDF-Tsopy v1.3...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -100,12 +101,12 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// ─── Background Sync (για μελλοντική χρήση) ───────────────────────────────
+// ─── Background Sync ──────────────────────────────────────────────────────
 self.addEventListener('sync', (event) => {
   console.log('[SW] Background sync:', event.tag);
 });
 
-// ─── Push Notifications (για μελλοντική χρήση) ────────────────────────────
+// ─── Push Notifications ───────────────────────────────────────────────────
 self.addEventListener('push', (event) => {
   if (event.data) {
     const data = event.data.json();

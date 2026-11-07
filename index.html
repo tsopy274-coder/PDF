@@ -20,8 +20,9 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
 
-  <!-- PDF.js -->
+  <!-- PDF.js & pdf-lib -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.9/pdf-lib.min.js"></script>
 
   <style>
     /* ═══════════════════════════════════════════
@@ -30,21 +31,21 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #0f0f1a;
-      --surface:   #1a1a2e;
-      --surface2:  #16213e;
-      --accent:    #4f8ef7;
-      --accent2:   #7c3aed;
-      --text:      #e2e8f0;
-      --text-muted:#94a3b8;
-      --border:    #2d3748;
-      --danger:    #ef4444;
-      --success:   #22c55e;
-      --warning:   #f59e0b;
-      --radius:    12px;
-      --toolbar-h: 60px;
-      --bottom-h:  64px;
-      --shadow:    0 4px 24px rgba(0,0,0,0.4);
+      --bg:         #0f0f1a;
+      --surface:    #1a1a2e;
+      --surface2:   #16213e;
+      --accent:     #4f8ef7;
+      --accent2:    #7c3aed;
+      --text:       #e2e8f0;
+      --text-muted: #94a3b8;
+      --border:     #2d3748;
+      --danger:     #ef4444;
+      --success:    #22c55e;
+      --warning:    #f59e0b;
+      --radius:     12px;
+      --toolbar-h:  60px;
+      --bottom-h:   64px;
+      --shadow:     0 4px 24px rgba(0,0,0,0.4);
     }
 
     html, body {
@@ -86,17 +87,18 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--accent);
       white-space: nowrap;
       flex-shrink: 0;
+      cursor: pointer;
     }
-    .logo svg { width: 28px; height: 28px; }
+    .logo svg { width: 26px; height: 26px; }
 
     .toolbar-sep {
       width: 1px;
-      height: 32px;
+      height: 28px;
       background: var(--border);
       flex-shrink: 0;
     }
@@ -111,13 +113,131 @@
       min-width: 0;
     }
 
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .icon-btn:hover {
+      background: rgba(79,142,247,0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .icon-btn svg { width: 18px; height: 18px; }
+
+    .btn-save-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(79,142,247,0.3);
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn-save-top:active { transform: scale(0.96); }
+    .btn-save-top svg { width: 16px; height: 16px; }
+
     /* Page info */
     #pageInfo {
       font-size: 0.82rem;
       color: var(--text-muted);
       white-space: nowrap;
       flex-shrink: 0;
+      padding: 0 4px;
     }
+
+    /* ─── INSTALL BANNER ─── */
+    #installBanner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, rgba(79,142,247,0.15), rgba(124,58,237,0.15));
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    #installBanner.show { display: flex; }
+    .install-text { flex: 1; font-size: 0.82rem; color: var(--text); }
+    .install-text strong { color: var(--accent); }
+    .install-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .install-dismiss {
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 2px 6px;
+      flex-shrink: 0;
+    }
+
+    /* ─── PAGE NAV ─── */
+    #pageNav {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    #pageNav.show { display: flex; }
+    .nav-btn {
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .nav-btn:hover:not(:disabled) { background: var(--border); }
+    .nav-btn:disabled { opacity: 0.4; cursor: default; }
+    #pageInput {
+      width: 54px;
+      text-align: center;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 8px;
+      color: var(--text);
+      font-size: 0.88rem;
+      outline: none;
+    }
+    #pageInput:focus { border-color: var(--accent); }
+    .page-of { font-size: 0.82rem; color: var(--text-muted); flex: 1; }
 
     /* ─── VIEWER AREA ─── */
     #viewerArea {
@@ -128,6 +248,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    /* Invert / Dark reading mode */
+    #viewerArea.pdf-dark-mode .page-canvas {
+      filter: invert(0.9) hue-rotate(180deg);
     }
 
     /* Drop zone when no PDF */
@@ -145,8 +270,8 @@
     #dropZone.drag-over { background: rgba(79,142,247,0.08); }
 
     .drop-icon {
-      width: 100px;
-      height: 100px;
+      width: 96px;
+      height: 96px;
       border-radius: 24px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       display: flex;
@@ -154,7 +279,7 @@
       justify-content: center;
       box-shadow: 0 8px 32px rgba(79,142,247,0.3);
     }
-    .drop-icon svg { width: 52px; height: 52px; color: white; }
+    .drop-icon svg { width: 50px; height: 50px; color: white; }
 
     .drop-title {
       font-size: 1.5rem;
@@ -164,7 +289,7 @@
     .drop-subtitle {
       font-size: 0.9rem;
       color: var(--text-muted);
-      max-width: 280px;
+      max-width: 320px;
       line-height: 1.6;
     }
 
@@ -183,12 +308,13 @@
       box-shadow: 0 4px 20px rgba(79,142,247,0.4);
       transition: transform 0.15s, box-shadow 0.15s;
     }
-    .btn-open-big:active { transform: scale(0.97); box-shadow: 0 2px 10px rgba(79,142,247,0.3); }
+    .btn-open-big:active { transform: scale(0.97); }
 
     /* Recent files */
     .recent-section {
       width: 100%;
       max-width: 400px;
+      margin-top: 10px;
     }
     .recent-title {
       font-size: 0.8rem;
@@ -214,7 +340,7 @@
       transition: background 0.15s, border-color 0.15s;
     }
     .recent-item:hover, .recent-item:active { background: var(--surface2); border-color: var(--accent); }
-    .recent-item-name { flex: 1; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .recent-item-name { flex: 1; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
     .recent-item-size { font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; }
 
     /* Canvas pages */
@@ -222,7 +348,7 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
       padding: 16px;
       width: 100%;
     }
@@ -235,7 +361,7 @@
       background: white;
       max-width: 100%;
     }
-    .page-canvas { display: block; max-width: 100%; }
+    .page-canvas { display: block; max-width: 100%; height: auto; }
 
     /* Annotation layer */
     .annot-layer {
@@ -243,8 +369,12 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       pointer-events: none;
+      touch-action: none;
     }
-    .annot-layer.draw-mode { pointer-events: all; cursor: crosshair; }
+    .annot-active .annot-layer {
+      pointer-events: all;
+      cursor: crosshair;
+    }
 
     /* ─── BOTTOM TOOLBAR ─── */
     #bottomBar {
@@ -273,35 +403,33 @@
       padding: 6px 10px;
       transition: color 0.15s, background 0.15s;
       font-size: 0.65rem;
-      min-width: 52px;
+      min-width: 48px;
     }
-    .tool-btn svg { width: 22px; height: 22px; }
+    .tool-btn svg { width: 20px; height: 20px; }
     .tool-btn:hover, .tool-btn.active {
       color: var(--accent);
       background: rgba(79,142,247,0.1);
     }
-    .tool-btn.active { color: var(--accent); }
 
-    /* ─── ZOOM CONTROLS (floating) ─── */
+    /* ─── FLOATING ZOOM CONTROLS ─── */
     #zoomControls {
       position: fixed;
       right: 14px;
       bottom: calc(var(--bottom-h) + 14px);
-      display: flex;
+      display: none;
       flex-direction: column;
       gap: 6px;
       z-index: 200;
-      display: none;
     }
 
     .zoom-btn {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--text);
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -310,14 +438,16 @@
       transition: background 0.15s;
     }
     .zoom-btn:active { background: var(--surface2); }
-
     .zoom-pct {
       text-align: center;
       font-size: 0.72rem;
       color: var(--text-muted);
+      background: rgba(26,26,46,0.8);
+      padding: 2px;
+      border-radius: 4px;
     }
 
-    /* ─── PANELS (search, info, thumbnail) ─── */
+    /* ─── PANELS ─── */
     .panel {
       position: fixed;
       top: var(--toolbar-h);
@@ -406,8 +536,8 @@
     #thumbPanel .thumb-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 10px;
-      padding: 14px;
+      gap: 12px;
+      padding: 16px;
       overflow-y: auto;
       flex: 1;
     }
@@ -415,37 +545,35 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       cursor: pointer;
       border-radius: 8px;
       padding: 6px;
       border: 2px solid transparent;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, background 0.15s;
     }
-    .thumb-item.active { border-color: var(--accent); }
+    .thumb-item.active { border-color: var(--accent); background: rgba(79,142,247,0.1); }
     .thumb-canvas { border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.4); max-width: 100%; }
-    .thumb-label { font-size: 0.72rem; color: var(--text-muted); }
+    .thumb-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
 
-    /* Info panel */
-    #infoPanel .info-body { padding: 16px; overflow-y: auto; flex: 1; }
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .info-row:last-child { border-bottom: none; }
-    .info-label { font-size: 0.82rem; color: var(--text-muted); flex-shrink: 0; }
-    .info-value { font-size: 0.88rem; color: var(--text); text-align: right; word-break: break-all; }
-
-    /* Annotation tools panel */
-    #annotPanel .annot-tools {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+    /* Annotation panel */
+    #annotPanel .annot-body {
       padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .annot-section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+    .annot-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
     }
     .annot-tool-btn {
       display: flex;
@@ -455,25 +583,22 @@
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 14px 18px;
+      padding: 12px 6px;
       cursor: pointer;
       color: var(--text);
       transition: border-color 0.15s, background 0.15s;
-      flex: 1;
-      min-width: 80px;
+      font-size: 0.75rem;
     }
     .annot-tool-btn:hover, .annot-tool-btn.active {
       border-color: var(--accent);
-      background: rgba(79,142,247,0.1);
+      background: rgba(79,142,247,0.15);
       color: var(--accent);
     }
-    .annot-tool-btn svg { width: 26px; height: 26px; }
-    .annot-tool-btn span { font-size: 0.75rem; }
+    .annot-tool-btn svg { width: 22px; height: 22px; }
 
     .color-picker-row {
       display: flex;
-      gap: 10px;
-      padding: 0 16px 16px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .color-swatch {
@@ -489,7 +614,88 @@
       transform: scale(1.15);
     }
 
-    /* ─── TOAST ─── */
+    .size-picker-row {
+      display: flex;
+      gap: 10px;
+    }
+    .size-btn {
+      flex: 1;
+      padding: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .size-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(79,142,247,0.15);
+    }
+
+    .annot-actions-row {
+      display: flex;
+      gap: 10px;
+    }
+    .annot-action-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s;
+    }
+    .annot-action-btn:hover { background: var(--border); }
+    .annot-action-btn.danger:hover { background: rgba(239,68,68,0.2); border-color: var(--danger); color: var(--danger); }
+
+    /* Tools panel */
+    #toolsPanel .tools-list {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .tool-row-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.95rem;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .tool-row-btn:hover { border-color: var(--accent); background: rgba(79,142,247,0.1); }
+    .tool-row-btn svg { width: 22px; height: 22px; color: var(--accent); flex-shrink: 0; }
+    .tool-row-btn .tool-row-desc { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* Info panel */
+    #infoPanel .info-body { padding: 16px; overflow-y: auto; flex: 1; }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 0.82rem; color: var(--text-muted); flex-shrink: 0; }
+    .info-value { font-size: 0.88rem; color: var(--text); text-align: right; word-break: break-all; }
+
+    /* ─── TOAST & LOADING ─── */
     #toast {
       position: fixed;
       bottom: calc(var(--bottom-h) + 16px);
@@ -513,11 +719,10 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* ─── LOADING OVERLAY ─── */
     #loadingOverlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,0.8);
       display: none;
       align-items: center;
       justify-content: center;
@@ -535,79 +740,21 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-size: 0.95rem; color: var(--text-muted); }
+    .loading-text { font-size: 0.95rem; color: var(--text); font-weight: 500; }
 
-    /* ─── INSTALL BANNER ─── */
-    #installBanner {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      background: linear-gradient(135deg, rgba(79,142,247,0.15), rgba(124,58,237,0.15));
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
+    /* Print Styles */
+    @media print {
+      body, html { overflow: visible !important; height: auto !important; background: white !important; }
+      #toolbar, #bottomBar, #zoomControls, #pageNav, #installBanner, .panel, #toast, #dropZone { display: none !important; }
+      #app, #viewerArea { overflow: visible !important; height: auto !important; background: white !important; }
+      #pdfContainer { display: flex !important; padding: 0 !important; width: 100% !important; }
+      .page-wrapper {
+        box-shadow: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        margin: 0 !important;
+      }
     }
-    #installBanner.show { display: flex; }
-    .install-text { flex: 1; font-size: 0.82rem; color: var(--text); }
-    .install-text strong { color: var(--accent); }
-    .install-btn {
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 7px 14px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .install-dismiss {
-      border: none;
-      background: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1.1rem;
-      padding: 2px 6px;
-      flex-shrink: 0;
-    }
-
-    /* ─── PAGE NAV ─── */
-    #pageNav {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    #pageNav.show { display: flex; }
-    .nav-btn {
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      color: var(--text);
-      border-radius: 8px;
-      padding: 6px 14px;
-      cursor: pointer;
-      font-size: 0.88rem;
-      transition: background 0.15s;
-      flex-shrink: 0;
-    }
-    .nav-btn:hover:not(:disabled) { background: var(--border); }
-    .nav-btn:disabled { opacity: 0.4; cursor: default; }
-    #pageInput {
-      width: 54px;
-      text-align: center;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 6px 8px;
-      color: var(--text);
-      font-size: 0.88rem;
-      outline: none;
-    }
-    #pageInput:focus { border-color: var(--accent); }
-    .page-of { font-size: 0.82rem; color: var(--text-muted); flex: 1; }
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -627,8 +774,7 @@
 
   <!-- ═══ TOP TOOLBAR ═══════════════════════════════════ -->
   <div id="toolbar">
-    <div class="logo">
-      <!-- PDF icon -->
+    <div class="logo" id="logoBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
         <polyline points="14,2 14,8 20,8"/>
@@ -640,8 +786,46 @@
     </div>
     <div class="toolbar-sep"></div>
     <div class="filename-label" id="filenameLabel">Επίλεξε ένα PDF...</div>
+
     <div id="pageInfo" style="display:none">
       <span id="pageNum">1</span>/<span id="pageTot">1</span>
+    </div>
+
+    <!-- Quick Top Actions -->
+    <div class="top-actions" id="topActions" style="display:none">
+      <!-- Rotate -->
+      <button class="icon-btn" id="rotateTopBtn" title="Περιστροφή 90°">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+      </button>
+
+      <!-- Invert Night Mode -->
+      <button class="icon-btn" id="darkTopBtn" title="Νυχτερινή λειτουργία">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <!-- Print -->
+      <button class="icon-btn" id="printTopBtn" title="Εκτύπωση">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+      </button>
+
+      <!-- Save / Download PDF -->
+      <button class="btn-save-top" id="saveTopBtn" title="Αποθήκευση PDF">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span>Αποθήκευση</span>
+      </button>
     </div>
   </div>
 
@@ -676,7 +860,7 @@
       </div>
       <div class="drop-title">PDF-Tsopy</div>
       <div class="drop-subtitle">
-        Άνοιξε ένα PDF αρχείο για προβολή, σχολιασμό και επεξεργασία — τοπικά, χωρίς αποστολή στο internet.
+        Προβολή, ελεύθερη σχεδίαση, σχολιασμός και αποθήκευση PDF — 100% τοπικά και ασφαλώς.
       </div>
       <button class="btn-open-big" id="openBigBtn">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -731,6 +915,15 @@
         <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
       </svg>
       <span>Σχόλια</span>
+    </button>
+
+    <!-- Extra Tools -->
+    <button class="tool-btn" id="toolsBtn" title="Εργαλεία">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      <span>Εργαλεία</span>
     </button>
 
     <!-- Info -->
@@ -793,50 +986,149 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
     </svg>
-    <div class="panel-title">Εργαλεία Σχολιασμού</div>
+    <div class="panel-title">Εργαλεία Σχολιασμού & Σχεδίασης</div>
     <button class="panel-close" data-close="annotPanel">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
       </svg>
     </button>
   </div>
-  <div class="annot-tools">
-    <button class="annot-tool-btn" data-tool="highlight">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 11l-4 4-4-4 4-4z"/><path d="M17 11l-4 4-4-4 4-4z"/>
-        <line x1="22" y1="11" x2="17" y2="11"/><line x1="22" y1="11" x2="22" y2="6"/>
+
+  <div class="annot-body">
+    <div class="annot-section-title">Επιλογή Εργαλείου</div>
+    <div class="annot-tools-grid">
+      <!-- Freehand Pen -->
+      <button class="annot-tool-btn active" data-tool="draw">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/>
+        </svg>
+        <span>Πένα / Σχέδιο</span>
+      </button>
+
+      <!-- Highlight -->
+      <button class="annot-tool-btn" data-tool="highlight">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l-4 4-4-4 4-4z"/><path d="M17 11l-4 4-4-4 4-4z"/>
+          <line x1="22" y1="11" x2="17" y2="11"/><line x1="22" y1="11" x2="22" y2="6"/>
+        </svg>
+        <span>Μαρκαδόρος</span>
+      </button>
+
+      <!-- Underline -->
+      <button class="annot-tool-btn" data-tool="underline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 3v7a6 6 0 0 0 12 0V3"/><line x1="4" y1="21" x2="20" y2="21"/>
+        </svg>
+        <span>Υπογράμμιση</span>
+      </button>
+
+      <!-- Note -->
+      <button class="annot-tool-btn" data-tool="note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>Κείμενο</span>
+      </button>
+    </div>
+
+    <div class="annot-section-title">Χρώμα</div>
+    <div class="color-picker-row" id="colorPicker">
+      <div class="color-swatch selected" style="background:#ef4444" data-color="#ef4444"></div>
+      <div class="color-swatch" style="background:#f59e0b" data-color="#f59e0b"></div>
+      <div class="color-swatch" style="background:#22c55e" data-color="#22c55e"></div>
+      <div class="color-swatch" style="background:#4f8ef7" data-color="#4f8ef7"></div>
+      <div class="color-swatch" style="background:#a855f7" data-color="#a855f7"></div>
+      <div class="color-swatch" style="background:#111827" data-color="#111827"></div>
+    </div>
+
+    <div class="annot-section-title">Πάχος Γραμμής</div>
+    <div class="size-picker-row">
+      <button class="size-btn active" data-size="3">Λεπτό (3px)</button>
+      <button class="size-btn" data-size="6">Μεσαίο (6px)</button>
+      <button class="size-btn" data-size="12">Παχύ (12px)</button>
+    </div>
+
+    <div class="annot-section-title">Ενέργειες</div>
+    <div class="annot-actions-row">
+      <button class="annot-action-btn" id="undoBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+        </svg>
+        Αναίρεση
+      </button>
+      <button class="annot-action-btn danger" id="clearAnnotBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        Καθαρισμός
+      </button>
+    </div>
+
+    <div style="color:var(--text-muted); font-size:0.8rem; line-height:1.5;">
+      💡 Σχεδιάστε ελεύθερα με το δάχτυλο ή το ποντίκι πάνω στη σελίδα του εγγράφου.
+    </div>
+  </div>
+</div>
+
+<!-- Tools Panel -->
+<div class="panel" id="toolsPanel">
+  <div class="panel-header">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+    <div class="panel-title">Εργαλεία PDF</div>
+    <button class="panel-close" data-close="toolsPanel">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
       </svg>
-      <span>Επισήμανση</span>
-    </button>
-    <button class="annot-tool-btn" data-tool="underline">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M6 3v7a6 6 0 0 0 12 0V3"/><line x1="4" y1="21" x2="20" y2="21"/>
-      </svg>
-      <span>Υπογράμμιση</span>
-    </button>
-    <button class="annot-tool-btn" data-tool="note">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-      </svg>
-      <span>Σημείωση</span>
-    </button>
-    <button class="annot-tool-btn" data-tool="draw">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 17 L21 17"/><path d="M3 12 Q9 6 15 12 Q21 18 21 12"/>
-      </svg>
-      <span>Σχεδίαση</span>
     </button>
   </div>
-  <div class="color-picker-row" id="colorPicker">
-    <div class="color-swatch selected" style="background:#f59e0b" data-color="#f59e0b"></div>
-    <div class="color-swatch" style="background:#ef4444" data-color="#ef4444"></div>
-    <div class="color-swatch" style="background:#22c55e" data-color="#22c55e"></div>
-    <div class="color-swatch" style="background:#4f8ef7" data-color="#4f8ef7"></div>
-    <div class="color-swatch" style="background:#a855f7" data-color="#a855f7"></div>
-    <div class="color-swatch" style="background:#ec4899" data-color="#ec4899"></div>
-  </div>
-  <div style="padding:0 16px 16px; color:var(--text-muted); font-size:0.82rem; line-height:1.6">
-    💡 Επίλεξε εργαλείο, μετά κάνε κλικ ή σύρε στη σελίδα για σχολιασμό.
+  <div class="tools-list">
+    <button class="tool-row-btn" id="saveToolBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      <div>
+        <div style="font-weight:600">Αποθήκευση & Λήψη PDF</div>
+        <div class="tool-row-desc">Εξαγωγή του αρχείου με τις σημειώσεις και σχεδιάσεις σας</div>
+      </div>
+    </button>
+
+    <button class="tool-row-btn" id="rotateToolBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      <div>
+        <div style="font-weight:600">Περιστροφή Σελίδων (+90°)</div>
+        <div class="tool-row-desc">Περιστρέψτε τις σελίδες δεξιόστροφα</div>
+      </div>
+    </button>
+
+    <button class="tool-row-btn" id="printToolBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 6 2 18 2 18 9"/>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      <div>
+        <div style="font-weight:600">Εκτύπωση Εγγράφου</div>
+        <div class="tool-row-desc">Άμεση αποστολή στον εκτυπωτή</div>
+      </div>
+    </button>
+
+    <button class="tool-row-btn" id="darkToolBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <div>
+        <div style="font-weight:600">Εναλλαγή Νυχτερινής Λειτουργίας</div>
+        <div class="tool-row-desc">Αντιστροφή χρωμάτων για άνετη ανάγνωση στο σκοτάδι</div>
+      </div>
+    </button>
   </div>
 </div>
 
@@ -883,19 +1175,15 @@
       <span class="info-label">Ημ/νία δημ.</span>
       <span class="info-value" id="iCreated">—</span>
     </div>
-    <div class="info-row">
-      <span class="info-label">PDF έκδοση</span>
-      <span class="info-value" id="iPDFver">—</span>
-    </div>
   </div>
 </div>
 
-<!-- Zoom Controls -->
+<!-- Floating Zoom Controls -->
 <div id="zoomControls">
-  <button class="zoom-btn" id="zoomInBtn">＋</button>
+  <button class="zoom-btn" id="zoomInBtn" title="Zoom in">＋</button>
   <div class="zoom-pct" id="zoomPct">100%</div>
-  <button class="zoom-btn" id="zoomOutBtn">－</button>
-  <button class="zoom-btn" id="zoomFitBtn" title="Fit page" style="font-size:0.8rem;">⤢</button>
+  <button class="zoom-btn" id="zoomOutBtn" title="Zoom out">－</button>
+  <button class="zoom-btn" id="zoomFitBtn" title="Fit width" style="font-size:0.85rem;">⤢</button>
 </div>
 
 <!-- Toast -->
@@ -923,17 +1211,21 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 // ─── State ────────────────────────────────────────────────────────────────
 const state = {
   pdfDoc: null,
+  rawArrayBuffer: null,
   currentFile: null,
   currentPage: 1,
   totalPages: 0,
   scale: 1.0,
-  renderQueue: [],
-  rendering: false,
-  annotTool: null,
-  annotColor: '#f59e0b',
-  annotations: {},      // { pageNum: [ { type, data, color } ] }
+  rotation: 0,           // 0, 90, 180, 270
+  annotTool: 'draw',     // 'draw', 'highlight', 'underline', 'note'
+  annotColor: '#ef4444',
+  annotSize: 3,
+  annotActions: {},      // { pageNum: [ actionObjects ] }
   recentFiles: [],
   deferredInstall: null,
+  isDrawing: false,
+  currentPath: null,
+  darkMode: false
 };
 
 // ─── DOM refs ─────────────────────────────────────────────────────────────
@@ -959,6 +1251,7 @@ const loadingText   = $('loadingText');
 const installBanner = $('installBanner');
 const recentSection = $('recentSection');
 const recentList    = $('recentList');
+const topActions    = $('topActions');
 
 // ─── Utilities ─────────────────────────────────────────────────────────────
 function showToast(msg, duration = 2500) {
@@ -978,6 +1271,7 @@ function hideLoading() {
 }
 
 function formatBytes(b) {
+  if (!b) return '—';
   if (b < 1024) return b + ' B';
   if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
   return (b / 1024 / 1024).toFixed(2) + ' MB';
@@ -991,21 +1285,28 @@ function parsePDFDate(raw) {
 }
 
 // ─── Panels ────────────────────────────────────────────────────────────────
+const PANELS = ['searchPanel','thumbPanel','annotPanel','toolsPanel','infoPanel'];
+const PANEL_BTNS = {
+  searchPanel: 'searchBtn',
+  thumbPanel:  'thumbBtn',
+  annotPanel:  'annotBtn',
+  toolsPanel:  'toolsBtn',
+  infoPanel:   'infoBtn'
+};
+
 function openPanel(id) {
-  ['searchPanel','thumbPanel','annotPanel','infoPanel'].forEach(p => {
+  PANELS.forEach(p => {
     const el = $(p);
     if (p === id) el.classList.add('open');
     else el.classList.remove('open');
   });
-  ['searchBtn','thumbBtn','annotBtn','infoBtn'].forEach(b => $(b).classList.remove('active'));
-  const map = { searchPanel:'searchBtn', thumbPanel:'thumbBtn', annotPanel:'annotBtn', infoPanel:'infoBtn' };
-  if (map[id]) $(map[id]).classList.add('active');
+  Object.values(PANEL_BTNS).forEach(b => $(b) && $(b).classList.remove('active'));
+  if (PANEL_BTNS[id] && $(PANEL_BTNS[id])) $(PANEL_BTNS[id]).classList.add('active');
 }
 
 function closePanel(id) {
   $(id).classList.remove('open');
-  const map = { searchPanel:'searchBtn', thumbPanel:'thumbBtn', annotPanel:'annotBtn', infoPanel:'infoBtn' };
-  if (map[id]) $(map[id]).classList.remove('active');
+  if (PANEL_BTNS[id] && $(PANEL_BTNS[id])) $(PANEL_BTNS[id]).classList.remove('active');
 }
 
 function togglePanel(id) {
@@ -1013,7 +1314,6 @@ function togglePanel(id) {
   else openPanel(id);
 }
 
-// Close buttons
 document.querySelectorAll('[data-close]').forEach(btn => {
   btn.addEventListener('click', () => closePanel(btn.dataset.close));
 });
@@ -1023,6 +1323,9 @@ function triggerOpen() { fileInput.click(); }
 
 $('openBtn').addEventListener('click', triggerOpen);
 $('openBigBtn').addEventListener('click', triggerOpen);
+$('logoBtn').addEventListener('click', () => {
+  if (!state.pdfDoc) triggerOpen();
+});
 
 fileInput.addEventListener('change', e => {
   const file = e.target.files[0];
@@ -1037,8 +1340,8 @@ viewerArea.addEventListener('drop', e => {
   e.preventDefault();
   dropZone.classList.remove('drag-over');
   const file = e.dataTransfer.files[0];
-  if (file && file.type === 'application/pdf') loadPDF(file);
-  else showToast('⚠️ Παρακαλώ επίλεξε αρχείο PDF.');
+  if (file && (file.type === 'application/pdf' || file.name.endsWith('.pdf'))) loadPDF(file);
+  else showToast('⚠️ Παρακαλώ επιλέξτε αρχείο PDF.');
 });
 
 // ─── Load PDF ──────────────────────────────────────────────────────────────
@@ -1046,18 +1349,20 @@ async function loadPDF(file) {
   if (!file) return;
   state.currentFile = file;
   state.currentPage = 1;
-  state.annotations = {};
+  state.rotation = 0;
+  state.annotActions = {};
 
   showLoading('Φόρτωση PDF...');
 
   try {
     const buffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+    state.rawArrayBuffer = buffer.slice(0); // copy for pdf-lib
 
-    state.pdfDoc    = pdf;
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+    state.pdfDoc = pdf;
     state.totalPages = pdf.numPages;
 
-    // Update UI
+    // Update Header & UI
     filenameLabel.textContent = file.name;
     pageNum.textContent = '1';
     pageTot.textContent = pdf.numPages;
@@ -1066,39 +1371,37 @@ async function loadPDF(file) {
     pageInput.max       = pdf.numPages;
 
     pageInfo.style.display = 'flex';
+    topActions.style.display = 'flex';
     pageNav.classList.add('show');
     zoomControls.style.display = 'flex';
 
-    // Hide drop zone, show container
+    // Hide dropzone, show container
     dropZone.style.display = 'none';
     pdfContainer.style.display = 'flex';
+    viewerArea.classList.add('annot-active');
 
-    // Auto-scale to viewport width
-    const page = await pdf.getPage(1);
-    const vp = page.getViewport({ scale: 1 });
+    // Auto-scale to viewport
+    const page1 = await pdf.getPage(1);
+    const vp = page1.getViewport({ scale: 1 });
     const targetW = Math.min(viewerArea.clientWidth - 32, 900);
-    state.scale = targetW / vp.width;
+    state.scale = targetW > 0 ? (targetW / vp.width) : 1.0;
     updateZoomPct();
 
-    // Render all pages (lazy for large docs)
+    // Render pages
     await renderAllPages();
 
-    // Thumbnails
+    // Build thumbnails
     buildThumbnails();
 
-    // PDF info
+    // Load Metadata
     await loadPDFInfo(file, pdf);
 
-    // Add to recent
+    // Save recent
     addToRecent(file.name, file.size);
 
     hideLoading();
-    showToast(`✅ ${file.name} φορτώθηκε (${pdf.numPages} σελίδες)`);
-
-    // Update nav buttons
+    showToast(`✅ ${file.name} (${pdf.numPages} σελίδες)`);
     updateNavBtns();
-
-    // Scroll to top
     viewerArea.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch (err) {
@@ -1116,6 +1419,7 @@ async function renderAllPages() {
     const wrapper = document.createElement('div');
     wrapper.className = 'page-wrapper';
     wrapper.id = `page-${i}`;
+    wrapper.dataset.page = i;
 
     const canvas = document.createElement('canvas');
     canvas.className = 'page-canvas';
@@ -1127,9 +1431,8 @@ async function renderAllPages() {
     wrapper.appendChild(annotLayer);
     pdfContainer.appendChild(wrapper);
 
-    // Render page
     const page = await state.pdfDoc.getPage(i);
-    const vp   = page.getViewport({ scale: state.scale });
+    const vp = page.getViewport({ scale: state.scale, rotation: state.rotation });
 
     canvas.width  = vp.width;
     canvas.height = vp.height;
@@ -1138,11 +1441,13 @@ async function renderAllPages() {
 
     await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
 
-    // Track scroll position to update page number
-    wrapper.dataset.page = i;
+    // Attach drawing events to annotation canvas
+    setupAnnotationEvents(annotLayer, i);
+
+    // Redraw existing annotations for this page if any
+    redrawAnnotations(i);
   }
 
-  // Intersection Observer to update current page
   setupPageObserver();
 }
 
@@ -1193,7 +1498,7 @@ function updateZoomPct() {
 $('zoomInBtn').addEventListener('click', async () => {
   state.scale = Math.min(state.scale + 0.25, 4.0);
   updateZoomPct();
-  showLoading('Εφαρμογή zoom...');
+  showLoading('Zoom...');
   await renderAllPages();
   hideLoading();
 });
@@ -1201,7 +1506,7 @@ $('zoomInBtn').addEventListener('click', async () => {
 $('zoomOutBtn').addEventListener('click', async () => {
   state.scale = Math.max(state.scale - 0.25, 0.25);
   updateZoomPct();
-  showLoading('Εφαρμογή zoom...');
+  showLoading('Zoom...');
   await renderAllPages();
   hideLoading();
 });
@@ -1209,53 +1514,339 @@ $('zoomOutBtn').addEventListener('click', async () => {
 $('zoomFitBtn').addEventListener('click', async () => {
   if (!state.pdfDoc) return;
   const page = await state.pdfDoc.getPage(1);
-  const vp = page.getViewport({ scale: 1 });
+  const vp = page.getViewport({ scale: 1, rotation: state.rotation });
   const targetW = Math.min(viewerArea.clientWidth - 32, 900);
-  state.scale = targetW / vp.width;
+  state.scale = targetW > 0 ? (targetW / vp.width) : 1.0;
   updateZoomPct();
-  showLoading('Fit page...');
+  showLoading('Fit...');
   await renderAllPages();
   hideLoading();
 });
 
-// Touch pinch-to-zoom
-let initDist = 0;
-let initScale = 1;
-viewerArea.addEventListener('touchstart', e => {
-  if (e.touches.length === 2) {
-    initDist  = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    );
-    initScale = state.scale;
-  }
-}, { passive: true });
+// ─── Freehand Drawing & Annotations Engine ─────────────────────────────────
+function setupAnnotationEvents(canvas, pageNum) {
+  const getPos = e => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  };
 
-viewerArea.addEventListener('touchend', async e => {
-  if (e.changedTouches.length === 2 && initDist > 0) {
-    // re-render triggered by pinch end
-    updateZoomPct();
-    showLoading('Εφαρμογή zoom...');
-    await renderAllPages();
+  canvas.addEventListener('pointerdown', e => {
+    if (!state.pdfDoc) return;
+    const pos = getPos(e);
+
+    if (state.annotTool === 'draw') {
+      state.isDrawing = true;
+      canvas.setPointerCapture(e.pointerId);
+      state.currentPath = {
+        type: 'draw',
+        points: [pos],
+        color: state.annotColor,
+        size: state.annotSize
+      };
+      const ctx = canvas.getContext('2d');
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, state.annotSize / 2, 0, Math.PI * 2);
+      ctx.fillStyle = state.annotColor;
+      ctx.fill();
+    } else if (state.annotTool === 'highlight') {
+      if (!state.annotActions[pageNum]) state.annotActions[pageNum] = [];
+      state.annotActions[pageNum].push({
+        type: 'highlight',
+        x: pos.x - 70,
+        y: pos.y - 12,
+        w: 140,
+        h: 24,
+        color: state.annotColor
+      });
+      redrawAnnotations(pageNum);
+      showToast('🌟 Επισήμανση προστέθηκε');
+    } else if (state.annotTool === 'underline') {
+      if (!state.annotActions[pageNum]) state.annotActions[pageNum] = [];
+      state.annotActions[pageNum].push({
+        type: 'underline',
+        x1: pos.x - 70,
+        y1: pos.y + 10,
+        x2: pos.x + 70,
+        y2: pos.y + 10,
+        color: state.annotColor,
+        size: state.annotSize
+      });
+      redrawAnnotations(pageNum);
+      showToast('Υπογράμμιση προστέθηκε');
+    } else if (state.annotTool === 'note') {
+      const text = prompt('Εισάγετε κείμενο σημείωσης:');
+      if (text && text.trim()) {
+        if (!state.annotActions[pageNum]) state.annotActions[pageNum] = [];
+        state.annotActions[pageNum].push({
+          type: 'note',
+          text: text.trim(),
+          x: pos.x,
+          y: pos.y,
+          color: state.annotColor,
+          size: state.annotSize
+        });
+        redrawAnnotations(pageNum);
+        showToast('📝 Σημείωση προστέθηκε');
+      }
+    }
+  });
+
+  canvas.addEventListener('pointermove', e => {
+    if (!state.isDrawing || state.annotTool !== 'draw' || !state.currentPath) return;
+    const pos = getPos(e);
+    state.currentPath.points.push(pos);
+
+    const ctx = canvas.getContext('2d');
+    const pts = state.currentPath.points;
+    if (pts.length > 1) {
+      const p1 = pts[pts.length - 2];
+      const p2 = pts[pts.length - 1];
+      ctx.beginPath();
+      ctx.strokeStyle = state.currentPath.color;
+      ctx.lineWidth   = state.currentPath.size;
+      ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+  });
+
+  const stopDrawing = e => {
+    if (state.isDrawing && state.currentPath) {
+      state.isDrawing = false;
+      if (!state.annotActions[pageNum]) state.annotActions[pageNum] = [];
+      state.annotActions[pageNum].push(state.currentPath);
+      state.currentPath = null;
+      try { canvas.releasePointerCapture(e.pointerId); } catch {}
+    }
+  };
+
+  canvas.addEventListener('pointerup', stopDrawing);
+  canvas.addEventListener('pointercancel', stopDrawing);
+}
+
+function redrawAnnotations(pageNum) {
+  const wrapper = $(`page-${pageNum}`);
+  if (!wrapper) return;
+  const canvas = wrapper.querySelector('.annot-layer');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const actions = state.annotActions[pageNum] || [];
+  actions.forEach(act => {
+    if (act.type === 'draw') {
+      if (!act.points || act.points.length === 0) return;
+      ctx.beginPath();
+      ctx.strokeStyle = act.color;
+      ctx.lineWidth   = act.size || 3;
+      ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
+      ctx.moveTo(act.points[0].x, act.points[0].y);
+      for (let i = 1; i < act.points.length; i++) {
+        ctx.lineTo(act.points[i].x, act.points[i].y);
+      }
+      ctx.stroke();
+    } else if (act.type === 'highlight') {
+      ctx.save();
+      ctx.globalAlpha = 0.35;
+      ctx.fillStyle = act.color;
+      ctx.fillRect(act.x, act.y, act.w, act.h);
+      ctx.restore();
+    } else if (act.type === 'underline') {
+      ctx.beginPath();
+      ctx.strokeStyle = act.color;
+      ctx.lineWidth   = act.size || 3;
+      ctx.lineCap     = 'round';
+      ctx.moveTo(act.x1, act.y1);
+      ctx.lineTo(act.x2, act.y2);
+      ctx.stroke();
+    } else if (act.type === 'note') {
+      ctx.save();
+      ctx.fillStyle = act.color;
+      const fontSize = Math.max(14, (act.size || 3) * 4);
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      ctx.fillText('📝 ' + act.text, act.x, act.y);
+      ctx.restore();
+    }
+  });
+}
+
+// Annotation UI controls
+document.querySelectorAll('.annot-tool-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.annotTool = btn.dataset.tool;
+    document.querySelectorAll('.annot-tool-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    showToast(`✏️ Εργαλείο: ${btn.querySelector('span').textContent}`);
+  });
+});
+
+document.querySelectorAll('.color-swatch').forEach(swatch => {
+  swatch.addEventListener('click', () => {
+    state.annotColor = swatch.dataset.color;
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+    swatch.classList.add('selected');
+  });
+});
+
+document.querySelectorAll('.size-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.annotSize = parseInt(btn.dataset.size);
+    document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// Undo
+$('undoBtn').addEventListener('click', () => {
+  const p = state.currentPage;
+  if (state.annotActions[p] && state.annotActions[p].length > 0) {
+    state.annotActions[p].pop();
+    redrawAnnotations(p);
+    showToast('↩️ Αναίρεση');
+  } else {
+    showToast('Δεν υπάρχει ενέργεια για αναίρεση');
+  }
+});
+
+// Clear
+$('clearAnnotBtn').addEventListener('click', () => {
+  const p = state.currentPage;
+  if (confirm(`Καθαρισμός όλων των σχεδίων στη σελίδα ${p};`)) {
+    state.annotActions[p] = [];
+    redrawAnnotations(p);
+    showToast(`🗑️ Καθαρίστηκε η σελίδα ${p}`);
+  }
+});
+
+// ─── Rotate Pages ──────────────────────────────────────────────────────────
+async function rotateDoc() {
+  if (!state.pdfDoc) { showToast('⚠️ Ανοίξτε πρώτα ένα PDF.'); return; }
+  state.rotation = (state.rotation + 90) % 360;
+  showLoading(`Περιστροφή ${state.rotation}°...`);
+  await renderAllPages();
+  buildThumbnails();
+  hideLoading();
+  showToast(`↻ Περιστροφή στις ${state.rotation}°`);
+}
+
+$('rotateTopBtn').addEventListener('click', rotateDoc);
+$('rotateToolBtn').addEventListener('click', () => {
+  closePanel('toolsPanel');
+  rotateDoc();
+});
+
+// ─── Print Document ────────────────────────────────────────────────────────
+function printPDF() {
+  if (!state.pdfDoc) { showToast('⚠️ Ανοίξτε πρώτα ένα PDF.'); return; }
+  window.print();
+}
+
+$('printTopBtn').addEventListener('click', printPDF);
+$('printToolBtn').addEventListener('click', () => {
+  closePanel('toolsPanel');
+  printPDF();
+});
+
+// ─── Night / Dark Mode ─────────────────────────────────────────────────────
+function toggleDarkMode() {
+  state.darkMode = !state.darkMode;
+  viewerArea.classList.toggle('pdf-dark-mode', state.darkMode);
+  showToast(state.darkMode ? '🌙 Νυχτερινή λειτουργία ενεργή' : '☀️ Κανονική λειτουργία');
+}
+
+$('darkTopBtn').addEventListener('click', toggleDarkMode);
+$('darkToolBtn').addEventListener('click', () => {
+  closePanel('toolsPanel');
+  toggleDarkMode();
+});
+
+// ─── Save / Export PDF with pdf-lib ────────────────────────────────────────
+async function saveAndDownloadPDF() {
+  if (!state.pdfDoc || !state.rawArrayBuffer) {
+    showToast('⚠️ Ανοίξτε πρώτα ένα PDF.');
+    return;
+  }
+
+  showLoading('Δημιουργία & Εξαγωγή PDF...');
+
+  try {
+    const { PDFDocument, degrees } = PDFLib;
+    // Load original PDF
+    const pdfDoc = await PDFDocument.load(state.rawArrayBuffer);
+    const pages  = pdfDoc.getPages();
+
+    for (let i = 1; i <= state.totalPages; i++) {
+      const pageIndex = i - 1;
+      const pdfPage   = pages[pageIndex];
+
+      // Apply rotation if changed
+      if (state.rotation !== 0) {
+        const curRot = pdfPage.getRotation().angle || 0;
+        pdfPage.setRotation(degrees((curRot + state.rotation) % 360));
+      }
+
+      // Check if this page has annotations
+      const actions = state.annotActions[i] || [];
+      if (actions.length > 0) {
+        const wrapper = $(`page-${i}`);
+        if (wrapper) {
+          const annotCanvas = wrapper.querySelector('.annot-layer');
+          if (annotCanvas) {
+            const pngDataUrl = annotCanvas.toDataURL('image/png');
+            const pngImage   = await pdfDoc.embedPng(pngDataUrl);
+            const { width, height } = pdfPage.getSize();
+
+            pdfPage.drawImage(pngImage, {
+              x: 0,
+              y: 0,
+              width: width,
+              height: height,
+            });
+          }
+        }
+      }
+    }
+
+    // Serialize PDF
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url  = URL.createObjectURL(blob);
+
+    const baseName = (state.currentFile ? state.currentFile.name.replace(/\.pdf$/i, '') : 'document');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${baseName}_edited.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
     hideLoading();
-    initDist = 0;
+    showToast('🎉 Το PDF αποθηκεύτηκε επιτυχώς!');
+  } catch (err) {
+    hideLoading();
+    console.error('Save PDF error:', err);
+    showToast('❌ Σφάλμα κατά την αποθήκευση PDF.');
   }
-}, { passive: true });
+}
 
-viewerArea.addEventListener('touchmove', e => {
-  if (e.touches.length === 2) {
-    const dist = Math.hypot(
-      e.touches[0].clientX - e.touches[1].clientX,
-      e.touches[0].clientY - e.touches[1].clientY
-    );
-    state.scale = Math.max(0.25, Math.min(4.0, initScale * (dist / initDist)));
-    updateZoomPct();
-  }
-}, { passive: true });
+$('saveTopBtn').addEventListener('click', saveAndDownloadPDF);
+$('saveToolBtn').addEventListener('click', () => {
+  closePanel('toolsPanel');
+  saveAndDownloadPDF();
+});
 
 // ─── Search ────────────────────────────────────────────────────────────────
 $('searchBtn').addEventListener('click', () => {
-  if (!state.pdfDoc) { showToast('⚠️ Άνοιξε πρώτα ένα PDF.'); return; }
+  if (!state.pdfDoc) { showToast('⚠️ Ανοίξτε πρώτα ένα PDF.'); return; }
   togglePanel('searchPanel');
   if ($('searchPanel').classList.contains('open')) $('searchInput').focus();
 });
@@ -1304,7 +1895,7 @@ async function doSearch() {
 
 // ─── Thumbnails ────────────────────────────────────────────────────────────
 $('thumbBtn').addEventListener('click', () => {
-  if (!state.pdfDoc) { showToast('⚠️ Άνοιξε πρώτα ένα PDF.'); return; }
+  if (!state.pdfDoc) { showToast('⚠️ Ανοίξτε πρώτα ένα PDF.'); return; }
   togglePanel('thumbPanel');
 });
 
@@ -1323,7 +1914,7 @@ async function buildThumbnails() {
 
     const label = document.createElement('div');
     label.className = 'thumb-label';
-    label.textContent = i;
+    label.textContent = `Σελ. ${i}`;
 
     item.appendChild(canvas);
     item.appendChild(label);
@@ -1336,96 +1927,31 @@ async function buildThumbnails() {
       item.classList.add('active');
     });
 
-    // Render thumbnail async
     setTimeout(async () => {
       try {
         const page = await state.pdfDoc.getPage(i);
-        const vp = page.getViewport({ scale: 0.2 });
+        const vp = page.getViewport({ scale: 0.2, rotation: state.rotation });
         canvas.width  = vp.width;
         canvas.height = vp.height;
         await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
       } catch {}
-    }, i * 50);
+    }, i * 40);
   }
 }
 
-// ─── Annotation ────────────────────────────────────────────────────────────
+// ─── Bottom Tools & Info ───────────────────────────────────────────────────
 $('annotBtn').addEventListener('click', () => {
-  if (!state.pdfDoc) { showToast('⚠️ Άνοιξε πρώτα ένα PDF.'); return; }
+  if (!state.pdfDoc) { showToast('⚠️ Ανοίξτε πρώτα ένα PDF.'); return; }
   togglePanel('annotPanel');
 });
 
-document.querySelectorAll('.annot-tool-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const tool = btn.dataset.tool;
-    if (state.annotTool === tool) {
-      state.annotTool = null;
-      btn.classList.remove('active');
-      showToast('Εργαλείο απενεργοποιήθηκε');
-    } else {
-      state.annotTool = tool;
-      document.querySelectorAll('.annot-tool-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      showToast(`✏️ Εργαλείο: ${btn.querySelector('span').textContent}`);
-      closePanel('annotPanel');
-    }
-  });
+$('toolsBtn').addEventListener('click', () => {
+  if (!state.pdfDoc) { showToast('⚠️ Ανοίξτε πρώτα ένα PDF.'); return; }
+  togglePanel('toolsPanel');
 });
 
-document.querySelectorAll('.color-swatch').forEach(swatch => {
-  swatch.addEventListener('click', () => {
-    state.annotColor = swatch.dataset.color;
-    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
-    swatch.classList.add('selected');
-  });
-});
-
-// Click on viewer area for annotation
-viewerArea.addEventListener('click', e => {
-  if (!state.annotTool || !state.pdfDoc) return;
-
-  const wrapper = e.target.closest('.page-wrapper');
-  if (!wrapper) return;
-
-  const p = parseInt(wrapper.dataset.page);
-  const annotCanvas = wrapper.querySelector('.annot-layer');
-  const ctx = annotCanvas.getContext('2d');
-  const rect = annotCanvas.getBoundingClientRect();
-  const x = (e.clientX - rect.left) * (annotCanvas.width / rect.width);
-  const y = (e.clientY - rect.top)  * (annotCanvas.height / rect.height);
-
-  if (state.annotTool === 'highlight') {
-    ctx.globalAlpha = 0.35;
-    ctx.fillStyle = state.annotColor;
-    ctx.fillRect(x - 60, y - 10, 120, 22);
-    ctx.globalAlpha = 1;
-    showToast('🌟 Επισήμανση προστέθηκε');
-  } else if (state.annotTool === 'underline') {
-    ctx.strokeStyle = state.annotColor;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(x - 60, y + 12);
-    ctx.lineTo(x + 60, y + 12);
-    ctx.stroke();
-    showToast('Υπογράμμιση προστέθηκε');
-  } else if (state.annotTool === 'note') {
-    const text = prompt('Σημείωση:');
-    if (text) {
-      ctx.fillStyle = state.annotColor;
-      ctx.font = 'bold 13px sans-serif';
-      ctx.fillText('📝 ' + text, x, y);
-      showToast('📝 Σημείωση προστέθηκε');
-    }
-  }
-
-  // Store annotation
-  if (!state.annotations[p]) state.annotations[p] = [];
-  state.annotations[p].push({ tool: state.annotTool, x, y, color: state.annotColor });
-});
-
-// ─── Info ──────────────────────────────────────────────────────────────────
 $('infoBtn').addEventListener('click', () => {
-  if (!state.pdfDoc) { showToast('⚠️ Άνοιξε πρώτα ένα PDF.'); return; }
+  if (!state.pdfDoc) { showToast('⚠️ Ανοίξτε πρώτα ένα PDF.'); return; }
   togglePanel('infoPanel');
 });
 
@@ -1440,7 +1966,6 @@ async function loadPDFInfo(file, pdf) {
   $('iAuthor').textContent   = info.Author   || '—';
   $('iCreator').textContent  = info.Creator  || info.Producer || '—';
   $('iCreated').textContent  = parsePDFDate(info.CreationDate);
-  $('iPDFver').textContent   = meta.contentDispositionFilename || '—';
 }
 
 // ─── Recent files ──────────────────────────────────────────────────────────
@@ -1462,7 +1987,7 @@ function loadRecentFiles() {
 }
 
 function renderRecentFiles() {
-  if (state.recentFiles.length === 0) {
+  if (!state.recentFiles || state.recentFiles.length === 0) {
     recentSection.style.display = 'none';
     return;
   }
@@ -1477,10 +2002,10 @@ function renderRecentFiles() {
       <span class="recent-item-size">${formatBytes(f.size)}</span>
     </div>
   `).join('');
-  // Note: can't reopen from recent (security restriction), just show history
+
   recentList.querySelectorAll('.recent-item').forEach(item => {
     item.addEventListener('click', () => {
-      showToast('💡 Επίλεξε το αρχείο ξανά για άνοιγμα (browser security)');
+      showToast('💡 Επιλέξτε το αρχείο ξανά για άνοιγμα');
       triggerOpen();
     });
   });
@@ -1513,10 +2038,26 @@ window.addEventListener('appinstalled', () => {
   installBanner.classList.remove('show');
 });
 
-// ─── Keyboard shortcuts ────────────────────────────────────────────────────
+// ─── Keyboard Shortcuts ────────────────────────────────────────────────────
 document.addEventListener('keydown', e => {
   if (!state.pdfDoc) return;
   if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+
+  if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+    e.preventDefault();
+    saveAndDownloadPDF();
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+    e.preventDefault();
+    printPDF();
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) {
+    e.preventDefault();
+    $('undoBtn').click();
+    return;
+  }
 
   switch (e.key) {
     case 'ArrowRight':
@@ -1530,16 +2071,14 @@ document.addEventListener('keydown', e => {
     case 'End':
       e.preventDefault(); goToPage(state.totalPages); break;
     case '+': case '=':
-      e.preventDefault();
-      $('zoomInBtn').click(); break;
+      e.preventDefault(); $('zoomInBtn').click(); break;
     case '-':
-      e.preventDefault();
-      $('zoomOutBtn').click(); break;
+      e.preventDefault(); $('zoomOutBtn').click(); break;
     case 'f': case 'F':
       if (e.ctrlKey || e.metaKey) { e.preventDefault(); $('searchBtn').click(); }
       break;
     case 'Escape':
-      ['searchPanel','thumbPanel','annotPanel','infoPanel'].forEach(p => closePanel(p));
+      PANELS.forEach(p => closePanel(p));
       break;
   }
 });
@@ -1555,7 +2094,7 @@ if ('serviceWorker' in navigator) {
 
 // ─── Init ──────────────────────────────────────────────────────────────────
 loadRecentFiles();
-console.log('PDF-Tsopy PWA v1.2 — Ready');
+console.log('PDF-Tsopy PWA v1.3 — Ready');
 </script>
 
 </body>
